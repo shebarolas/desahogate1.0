@@ -1,0 +1,57 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String   @id @default(cuid())            // ID único para cada usuario
+  name           String?                                 // Nombre (opcional)
+  email          String   @unique                        // Email único (obligatorio)
+  emailVerified  DateTime?                               // Verificación de email
+  image          String?                                 // Imagen de perfil (opcional)
+  password       String?                                 // Solo se usa si implementas login con email/password
+  createdAt      DateTime @default(now())                // Fecha de creación
+  updatedAt      DateTime @updatedAt                     // Fecha de última actualización
+
+  accounts       Account[]                               // Relación 1:N con Account
+  sessions       Session[]                               // Relación 1:N con Session
+}
+
+model Account {
+  id                 String  @id @default(cuid())         // ID de la cuenta OAuth
+  userId             String                               
+  type               String                               // Tipo (e.g. 'oauth', 'email')
+  provider           String                               // Nombre del proveedor (e.g. 'google', 'github')
+  providerAccountId  String                               // ID de cuenta del proveedor externo
+  refresh_token      String?                              // Token de refresco (opcional)
+  access_token       String?                              // Token de acceso (opcional)
+  expires_at         Int?                                 // Fecha de expiración
+  token_type         String?                              // Tipo de token (e.g. Bearer)
+  scope              String?                              // Alcance del token
+  id_token           String?                              // Token de identificación (OAuth2)
+  session_state      String?                              // Estado de sesión (Microsoft/Google)
+
+  user User @relation(fields: [userId], references: [id]) // Relación con User
+  @@unique([provider, providerAccountId])                 // Cada combinación proveedor + ID debe ser única
+}
+
+model Session {
+  id           String   @id @default(cuid())              // ID de sesión
+  sessionToken String   @unique                          // Token único para la sesión
+  userId       String
+  expires      DateTime                                 // Fecha en que expira la sesión
+
+  user User @relation(fields: [userId], references: [id]) // Relación con el usuario
+}
+
+model VerificationToken {
+  identifier String                                      // Email u otro identificador
+  token      String   @unique                           // Token único
+  expires    DateTime                                   // Fecha de expiración
+
+  @@unique([identifier, token])                         // Combinación única
+}
