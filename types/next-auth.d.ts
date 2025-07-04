@@ -7,6 +7,8 @@ declare module "next-auth" {
             name?: String;
             email?: String;
             image?: String | null;
+            hasSeenWelcome?: boolean;
+            
         }
     }
     interface User {
@@ -14,6 +16,7 @@ declare module "next-auth" {
         name?: String;
         email?: String;
         image?: String | null;
+        hasSeenWelcome?: boolean;
     }
 
 }
@@ -23,5 +26,6 @@ declare module "next-auth/jwt" {
     interface JWT {
         id: String;
         email?: String;
+        hasSeenWelcome?: boolean;
     }
 }

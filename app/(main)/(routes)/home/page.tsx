@@ -1,8 +1,9 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { Button } from "@/components/ui/button";
+
 import { getServerSession } from "next-auth";
-import { signOut } from "next-auth/react";
+
 import { redirect } from "next/navigation";
+import HomePage from "./homePage/HomePage";
 
 export default async function page() {
 
@@ -13,9 +14,9 @@ export default async function page() {
   }
 
   return (
-   <div className="">
-    <Button onClick={()=> signOut({callbackUrl: '/login'})}>Cerrar sesion</Button>
-   </div>
-  );
+    <>
+      <HomePage/>
+    </>
+  )
 }
 

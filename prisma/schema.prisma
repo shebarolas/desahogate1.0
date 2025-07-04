@@ -16,6 +16,8 @@ model User {
   password       String?                                 // Solo se usa si implementas login con email/password
   createdAt      DateTime @default(now())                // Fecha de creación
   updatedAt      DateTime @updatedAt                     // Fecha de última actualización
+  hasSeenWelcome Boolean @default(false)               // Indica si el usuario ha visto la pantalla de bienvenida
+  entryMode       EntryMode @default(PRIVATE) // Modo de entrada (privado, público o ambos)
 
   accounts       Account[]                               // Relación 1:N con Account
   sessions       Session[]                               // Relación 1:N con Session
@@ -54,4 +56,10 @@ model VerificationToken {
   expires    DateTime                                   // Fecha de expiración
 
   @@unique([identifier, token])                         // Combinación única
+}
+
+enum EntryMode {
+  PRIVATE
+  PUBLIC
+  BOTH
 }

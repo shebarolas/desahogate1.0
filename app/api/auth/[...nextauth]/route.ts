@@ -41,7 +41,8 @@ export const authOptions = {
                     id: user.id,
                     email: user.email ?? undefined,
                     name: user.name ?? undefined,
-                    image: user.image ?? undefined
+                    image: user.image ?? undefined,
+                    hasSeenWelcome: user.hasSeenWelcome
                 };
 
             }
@@ -60,6 +61,7 @@ export const authOptions = {
             if(user){
                 token.id = user.id;
                 token.email = user.email;
+                token.hasSeenWelcome = user.hasSeenWelcome;
             }
             return token;
         },
@@ -68,6 +70,7 @@ export const authOptions = {
             if (session.user) {
                 session.user.id = token.id as string;
                 session.user.email = token.email as string;
+                session.user.hasSeenWelcome = token.hasSeenWelcome as boolean;
             }
             return session;
         }

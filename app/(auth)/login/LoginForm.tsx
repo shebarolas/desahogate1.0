@@ -22,7 +22,7 @@ export default function LoginForm() {
         })
 
         if (res?.ok) {
-            router.push('/home');
+            router.push('/bienvenida'); // Redirige a la página de bienvenida después de iniciar sesión
         } else {
             console.error("Error al iniciar sesión:", res?.error);
             // Aquí podrías mostrar un mensaje de error al usuario si lo deseas
