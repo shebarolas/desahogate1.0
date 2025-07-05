@@ -41,28 +41,29 @@ export default function AuthForm({
         <main className="flex flex-row items-center justify-center w-full h-screen">
             <div className="h-full w-full flex flex-2/5 justify-center items-center bg-gray-200">
                 <div className="flex flex-col items-center">
-                    <img src={logo.src} alt="Logo" className="w-[13rem] h-[13rem]" />
+                    <img src={logo.src} alt="Logo" className="w-[13rem] h-[13rem] xl:h-[8rem] xl:w-[8rem]" />
                     <form onSubmit={submit}>
-                        <Card className='w-[30rem] h-min py-0'>
+                        <Card className='w-[30rem] h-min py-0 '>
                             <div className="p-10 flex flex-col gap-2">
                                 <CardHeader className="text-center">
-                                    <h2 className="text-2xl font-bold">{title}</h2>
+                                    <h2 className="text-2xl xl:text-xl font-bold">{title}</h2>
                                 </CardHeader>
                                 <CardContent className="text-center">
                                     <CardDescription>
                                         {description}
                                     </CardDescription>
                                 </CardContent>
-                                <div className="flex flex-col gap-4">
+                                <div className="flex flex-col gap-4 xl:h-min">
                                     {fields.map((field) => (
                                         <div key={field.name} className="flex flex-col gap-2">
-                                            <Label htmlFor={field.name}>{field.label}</Label>
+                                            <Label htmlFor={field.name} className="xl:text-xs">{field.label}</Label>
                                             <Input
                                                 id={field.name}
                                                 {...field.register} // Spread the register object if using react-hook-form
                                                 name={field.name}
                                                 type={field.type}
                                                 placeholder={field.placeholder}
+                                                className="xl:h-8"
                                             />
                                             {field.error && (
                                                 <p className="text-red-500 text-sm">{field.error}</p>
@@ -72,7 +73,7 @@ export default function AuthForm({
                                     ))}
                                     <Button className='w-full cursor-pointer bg-purple-500 hover:bg-purple-400' type="submit">{actionText}</Button>
                                 </div>
-                                <div className="flex justify-center items-center gap-2 mt-6">
+                                <div className="flex justify-center items-center gap-2 mt-6 xl:mt-2">
                                     <p className="text-sm">{footerText}</p>
                                     <Link href={footerLinkHref} className="text-sm text-purple-500 hover:text-purple-400">
                                         {footerLinkText}
