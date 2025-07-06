@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 
 type WelcomeStatus = {
     hasSeenWelcome: boolean;
+    entryMode?: "PRIVATE" | "PUBLIC" | "BOTH";
 }
 
 export async function PUT(req: Request, context: {params: {id: string}}) {
@@ -12,7 +13,8 @@ export async function PUT(req: Request, context: {params: {id: string}}) {
     const {id: userId} = await context.params;
     const session = await getServerSession(authOptions);
     const body: WelcomeStatus = await req.json();
-    const {hasSeenWelcome} = body;
+    const {hasSeenWelcome, entryMode} = body;
+    
 
     if (!session?.user?.email) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -40,7 +42,8 @@ export async function PUT(req: Request, context: {params: {id: string}}) {
             id: userId
         },
         data: {
-            hasSeenWelcome: hasSeenWelcome
+            hasSeenWelcome: hasSeenWelcome,
+            entryMode: entryMode // Si no se proporciona entryMode, se establece como undefined
         }
     })
 

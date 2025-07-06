@@ -5,18 +5,18 @@ import OnboardingSlider from "@/components/welcome/OnboardingSlider";
 
 
 export default async function page() {
-    const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
 
-    if(!session){
-        redirect('/login'); // If the user is not authenticated, redirect to the login page
-    }
-    // if(session.user.hasSeenWelcome) {
-    //   redirect('/home');
-    //  // If the user has already seen the welcome page, redirect to home
-    // }
+  if (!session) {
+    redirect('/login'); // If the user is not authenticated, redirect to the login page
+  }
+  if (session.user.hasSeenWelcome) {
+    redirect('/home');
+    // If the user has already seen the welcome page, redirect to home
+  }
   return (
     <>
-      <OnboardingSlider/>
+      <OnboardingSlider />
     </>
   )
 }

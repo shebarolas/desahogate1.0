@@ -12,9 +12,10 @@ interface SelectionPageProps {
     };
     toggleSelection: (key: "journal" | "posts") => void;
     handleStart: () => void;
+    selectBoth?: () => void; // Optional function to select both options
 }
 
-export default function SelectionPage({ selections, toggleSelection, handleStart }: SelectionPageProps) {
+export default function SelectionPage({ selections, toggleSelection, handleStart, selectBoth }: SelectionPageProps) {
 
     return (
         <div className="min-h-screen bg-rose-100  flex flex-col items-center justify-center p-4 overflow-y-auto overflow-x-hidden">
@@ -89,10 +90,7 @@ export default function SelectionPage({ selections, toggleSelection, handleStart
                     className={cn("p-6 border-2 border-rose-200 hover:border-rose-250 transition-all duration-300 cursor-pointer group hover:shadow-lg hover:shadow-rose-100/20 bg-white/90 backdrop-blur-sm",
                         selections.posts && selections.journal && "border-rose-300 shadow-lg shadow-rose-100/30"
                     )}
-                    onClick={() => {
-                        toggleSelection('journal');
-                        toggleSelection('posts');
-                    }}
+                    onClick={selectBoth}
                 >
                     <div className="flex items-start space-x-4">
                         <div className="w-12 h-12 bg-gradient-to-br from-rose-100 to-rose-200 rounded-2xl flex items-center justify-center group-hover:animate-gentle-bounce shadow-sm">

@@ -5,6 +5,8 @@ import WelcomePage from '@/app/(setup)/bienvenida/welcomePage/WelcomePage';
 import SelectionPage from '@/app/(setup)/bienvenida/selectionPage/SelectionPage';
 import { useSession } from 'next-auth/react';
 import { getEntryMode } from '@/utils/onboarding';
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 export default function OnboardingSlider() {
     const [step, setStep] = useState(0);
@@ -13,21 +15,49 @@ export default function OnboardingSlider() {
         posts: false,
     });
 
+    const router = useRouter();
+
+    const selectBoth = () => {
+        if (selections.journal && selections.posts) {
+            setSelections({ journal: false, posts: false });
+        } else {
+            setSelections({ journal: true, posts: true });
+        }
+
+    };
     const toggleSelection = (key: keyof typeof selections) => {
+        // Toggle the selection state for the given key
+        // This will switch between true and false
         setSelections(prev => ({ ...prev, [key]: !prev[key] }));
     };
 
     const entryMode = getEntryMode(selections);
 
     const { data: session } = useSession();
-    const handleStart = () => {
+    const handleStart = async() => {
         console.log('Entry mode:', entryMode);
-        console.log('Starting with selections:', selections);
-        // Aquí puedes enviar a tu API o contexto global
+
+        const userId = session?.user?.id;
+        if (!userId) {
+            console.error('User ID not found');
+            return;
+        }
+        const {status} = await axios.put(`/api/user/${userId}/welcome`, {
+            hasSeenWelcome: true,
+            entryMode: entryMode,
+        });
+
+        if (status !== 200) {
+            console.error('Failed to update welcome status');
+            return;
+        }else {
+            router.push('/home')
+        }
+        
     };
 
     return (
-        <div className="w-full h-screen relative bg-rose-50 overflow-x-hidden overflow-y-hidden">
+        <div className="w-full h-screen relative bg-rose-50 overflow-x-hidden">
             <AnimatePresence mode="wait">
                 {step === 0 && (
                     <motion.div
@@ -48,9 +78,10 @@ export default function OnboardingSlider() {
                         className="absolute inset-0 overflow-x-hidden overflow-y-auto"
                     >
                         <SelectionPage
-                        toggleSelection={toggleSelection}
-                        selections={selections}
-                        handleStart={handleStart}
+                            toggleSelection={toggleSelection}
+                            selections={selections}
+                            handleStart={handleStart}
+                            selectBoth={selectBoth}
                         />
                     </motion.div>
                 )}
