@@ -52,13 +52,14 @@ export const authOptions = {
         signIn: '/login',
     },
 
-    session : {
+    session: {
         strategy: 'jwt' as SessionStrategy,
     },
 
-    callbacks : {
-        async jwt({token, user}: {token: JWT, user?: User}) {
-            if(user){
+    callbacks: {
+        async jwt({ token, user }: { token: JWT, user?: User }) {
+            
+            if (user) {
                 token.id = user.id;
                 token.email = user.email;
                 token.hasSeenWelcome = user.hasSeenWelcome;
@@ -66,7 +67,7 @@ export const authOptions = {
             return token;
         },
 
-        async session({session, token}: {session: Session, token: JWT}) {
+        async session({ session, token }: { session: Session, token: JWT }) {
             if (session.user) {
                 session.user.id = token.id as string;
                 session.user.email = token.email as string;

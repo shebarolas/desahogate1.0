@@ -7,15 +7,23 @@ import { useSession } from 'next-auth/react';
 import { getEntryMode } from '@/utils/onboarding';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import { useRefreshToken } from '@/hooks/useRefreshToken';
+
+interface PropsSelection {
+    journal: boolean,
+    posts: boolean
+}
 
 export default function OnboardingSlider() {
     const [step, setStep] = useState(0);
-    const [selections, setSelections] = useState({
+    const [selections, setSelections] = useState<PropsSelection>({
         journal: false,
         posts: false,
     });
 
     const router = useRouter();
+
+    const { refresh } = useRefreshToken();
 
     const selectBoth = () => {
         if (selections.journal && selections.posts) {
@@ -33,16 +41,15 @@ export default function OnboardingSlider() {
 
     const entryMode = getEntryMode(selections);
 
-    const { data: session } = useSession();
-    const handleStart = async() => {
-        console.log('Entry mode:', entryMode);
 
+    const { data: session, update } = useSession();
+    const handleStart = async () => {
         const userId = session?.user?.id;
         if (!userId) {
             console.error('User ID not found');
             return;
         }
-        const {status} = await axios.put(`/api/user/${userId}/welcome`, {
+        const { status } = await axios.put(`/api/user/${userId}/welcome`, {
             hasSeenWelcome: true,
             entryMode: entryMode,
         });
@@ -50,10 +57,11 @@ export default function OnboardingSlider() {
         if (status !== 200) {
             console.error('Failed to update welcome status');
             return;
-        }else {
-            router.push('/home')
+        } else {
+            await refresh();
+            router.push('/home');
         }
-        
+
     };
 
     return (
