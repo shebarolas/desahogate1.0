@@ -1,5 +1,10 @@
-export default function layout({children}: {children: React.ReactNode}) {
+import HeaderSaludo from "@/components/home/HeaderSaludo";
+
+export default function layout({ children }: { children: React.ReactNode }) {
   return (
-    <div>{children}</div>
+    <div>
+      <HeaderSaludo/>
+      {children}
+    </div>
   )
 }

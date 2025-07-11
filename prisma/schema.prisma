@@ -1,65 +1,95 @@
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "postgresql"
-    url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-  id             String   @id @default(cuid())            // ID único para cada usuario
-  name           String?                                 // Nombre (opcional)
-  email          String   @unique                        // Email único (obligatorio)
-  emailVerified  DateTime?                               // Verificación de email
-  image          String?                                 // Imagen de perfil (opcional)
-  password       String?                                 // Solo se usa si implementas login con email/password
-  createdAt      DateTime @default(now())                // Fecha de creación
-  updatedAt      DateTime @updatedAt                     // Fecha de última actualización
-  hasSeenWelcome Boolean @default(false)               // Indica si el usuario ha visto la pantalla de bienvenida
-  entryMode       EntryMode @default(PRIVATE) // Modo de entrada (privado, público o ambos)
+  id             String    @id @default(cuid()) // ID único para cada usuario
+  name           String? // Nombre (opcional)
+  email          String    @unique // Email único (obligatorio)
+  emailVerified  DateTime? // Verificación de email
+  image          String? // Imagen de perfil (opcional)
+  password       String? // Solo se usa si implementas login con email/password
+  createdAt      DateTime  @default(now()) // Fecha de creación
+  updatedAt      DateTime  @updatedAt // Fecha de última actualización
+  hasSeenWelcome Boolean   @default(false) // Indica si el usuario ha visto la pantalla de bienvenida
+  entryMode      EntryMode @default(PRIVATE) // Modo de entrada (privado, público o ambos)
 
-  accounts       Account[]                               // Relación 1:N con Account
-  sessions       Session[]                               // Relación 1:N con Session
+  accounts Account[] // Relación 1:N con Account
+  sessions Session[] // Relación 1:N con Session
+  post Post[] // Relacion 1:N con Post
 }
 
 model Account {
-  id                 String  @id @default(cuid())         // ID de la cuenta OAuth
-  userId             String                               
-  type               String                               // Tipo (e.g. 'oauth', 'email')
-  provider           String                               // Nombre del proveedor (e.g. 'google', 'github')
-  providerAccountId  String                               // ID de cuenta del proveedor externo
-  refresh_token      String?                              // Token de refresco (opcional)
-  access_token       String?                              // Token de acceso (opcional)
-  expires_at         Int?                                 // Fecha de expiración
-  token_type         String?                              // Tipo de token (e.g. Bearer)
-  scope              String?                              // Alcance del token
-  id_token           String?                              // Token de identificación (OAuth2)
-  session_state      String?                              // Estado de sesión (Microsoft/Google)
+  id                String  @id @default(cuid()) // ID de la cuenta OAuth
+  userId            String
+  type              String // Tipo (e.g. 'oauth', 'email')
+  provider          String // Nombre del proveedor (e.g. 'google', 'github')
+  providerAccountId String // ID de cuenta del proveedor externo
+  refresh_token     String? // Token de refresco (opcional)
+  access_token      String? // Token de acceso (opcional)
+  expires_at        Int? // Fecha de expiración
+  token_type        String? // Tipo de token (e.g. Bearer)
+  scope             String? // Alcance del token
+  id_token          String? // Token de identificación (OAuth2)
+  session_state     String? // Estado de sesión (Microsoft/Google)
 
   user User @relation(fields: [userId], references: [id]) // Relación con User
-  @@unique([provider, providerAccountId])                 // Cada combinación proveedor + ID debe ser única
+
+  @@unique([provider, providerAccountId]) // Cada combinación proveedor + ID debe ser única
+}
+
+model Post {
+  id         String   @id @default(cuid())
+  userId     String
+  content    String
+  title      String
+  mood       Mood?
+  type       PostType?
+  isAnonymus Boolean @default(false)
+  visible    Boolean  @default(true)
+  createAt   DateTime @default(now())
+  updateAt   DateTime @updatedAt
+  user User @relation(fields: [userId], references: [id])// relacion con usuario
 }
 
 model Session {
-  id           String   @id @default(cuid())              // ID de sesión
-  sessionToken String   @unique                          // Token único para la sesión
+  id           String   @id @default(cuid()) // ID de sesión
+  sessionToken String   @unique // Token único para la sesión
   userId       String
-  expires      DateTime                                 // Fecha en que expira la sesión
+  expires      DateTime // Fecha en que expira la sesión
 
   user User @relation(fields: [userId], references: [id]) // Relación con el usuario
 }
 
 model VerificationToken {
-  identifier String                                      // Email u otro identificador
-  token      String   @unique                           // Token único
-  expires    DateTime                                   // Fecha de expiración
+  identifier String // Email u otro identificador
+  token      String   @unique // Token único
+  expires    DateTime // Fecha de expiración
 
-  @@unique([identifier, token])                         // Combinación única
+  @@unique([identifier, token]) // Combinación única
+}
+
+enum PostType {
+  diary
+  community
 }
 
 enum EntryMode {
   PRIVATE
   PUBLIC
   BOTH
+}
+
+enum Mood {
+  tristeza
+  alegria
+  ansiedad
+  rabia
+  calma
+  otro
 }
