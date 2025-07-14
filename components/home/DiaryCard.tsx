@@ -7,12 +7,14 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { diarySchema, DiarySchemaType } from "@/schemas/diary-post";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
+import { useCreatePost } from "@/hooks/useCreatePost";
 
 
 export default function DiaryCard({ activeTab }: { activeTab: string }) {
     const [diaryEntry, setDiaryEntry] = useState<string>("")
+    const {mutate} = useCreatePost();
 
-    const {register, handleSubmit, formState: {errors}} = useForm<DiarySchemaType>({
+    const {register, handleSubmit, formState: {errors}, reset} = useForm<DiarySchemaType>({
         resolver: zodResolver(diarySchema),
         defaultValues: {
             title: 'Diario 1',
@@ -20,20 +22,18 @@ export default function DiaryCard({ activeTab }: { activeTab: string }) {
     });
 
     const handleCreate: SubmitHandler<DiarySchemaType> = async (formData) => {
-            console.log(formData)
-
-            try {
-                const {status} = await axios.post('/api/post', {
-                    title: formData.title,
-                    content: formData.content,
-                });
-
-                if (status === 201) {
-                    console.log('post created')
+            mutate({
+                content: formData.content,
+                title: formData.title
+            },
+            {
+                onSuccess: () => {
+                    reset();
+                    setDiaryEntry("");
                 }
-            } catch (e) {
-                console.log(e)
             }
+        );
+            
     }
 
     return (
@@ -54,7 +54,6 @@ export default function DiaryCard({ activeTab }: { activeTab: string }) {
                         <div className="relative w-full">
                             <textarea
                                 placeholder="Querido diario, hoy me siento..."
-                                value={diaryEntry}
                                 {...register("content")}
                                 onChange={(e) => setDiaryEntry(e.target.value)}
                                 className="min-h-[240px] border-2 w-full border-rose-100 focus:border-rose-300 focus:ring-4 focus:ring-rose-100 rounded-2xl resize-none text-gray-700 placeholder:text-gray-400 text-lg leading-relaxed p-6 bg-gradient-to-br from-white to-rose-50/30 transition-all duration-300"
